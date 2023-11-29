@@ -7,67 +7,63 @@ public class Main {
     public static void main( String[] args ) throws Exception {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите арифметическое выражение:");
-        String userInput = scanner.nextLine();
+        String userInput = scanner.nextLine().toUpperCase();
         if (Pattern.compile("[^-+*/0-9IVX ]").matcher(userInput).find()) {
-            // [^...] negates a character class
             throw new Exception("Используются недопустимые символы");
         } else {
-//            calc(userInput);
             System.out.println(calc(userInput));
         }
         scanner.close();
 
     }
     public static String calc(String input) throws Exception {
-        String operand1 = "";
-        String operand2 = "";
-        String romanOp1 = "";
-        String romanOp2 = "";
+        StringBuilder operand1 = new StringBuilder();
+        StringBuilder operand2 = new StringBuilder();
+        StringBuilder romanOp1 = new StringBuilder();
+        StringBuilder romanOp2 = new StringBuilder();
         String operationSign = "";
-        String result = "";
+        String result;
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if (c == ' ') continue;
             if ((c == '-') || (c == '+') || (c == '*') || (c == '/')) {
                 operationSign = String.valueOf(c);
             } else if (c >= '0' && c <= '9' && operationSign.isEmpty()) {
-                operand1 = operand1 + c;
+                operand1.append(c);
             } else if (c >= '0' && c <= '9' && !operationSign.isEmpty()) {
-                operand2 = operand2 + c;
+                operand2.append(c);
             } else if ((c == 'I' || c == 'V' || c == 'X') && operationSign.isEmpty()) {
-                romanOp1 = romanOp1 + c;
+                romanOp1.append(c);
             } else if ((c == 'I' || c == 'V' || c == 'X') && !operationSign.isEmpty()) {
-                romanOp2 = romanOp2 + c;
+                romanOp2.append(c);
             } else {
                 throw new Exception("Используются недопустимые символы");
             }
         }
 
-        if (!operand1.isEmpty() && !operand2.isEmpty()) {
-            int op1 = Integer.parseInt(operand1);
-            int op2 = Integer.parseInt(operand2);
+        if ((operand1.length() > 0) && (operand2.length() > 0)) {
+            int op1 = Integer.parseInt(operand1.toString());
+            int op2 = Integer.parseInt(operand2.toString());
             if (op1 >= 1 && op1 <= 10 && op2 >= 1 && op2 <= 10) {
                 result = String.valueOf(calculation(op1, op2, operationSign));
             } else {
                 throw new Exception("Калькулятор принимает на вход только числа от 1 до 10 включительно");
             }
 
-        } else if (!romanOp1.isEmpty() && !romanOp2.isEmpty()) {
-//            System.out.println("romanOp1: " + romanOp1);
-//            System.out.println("operationSing: " + operationSign);
-//            System.out.println("romanOp2: " + romanOp2);
-            int op1 = convertToArabNumerics(romanOp1);
-            int op2 = convertToArabNumerics(romanOp2);
+        } else if ((romanOp1.length() > 0) && (romanOp2.length() > 0)) {
+            int op1 = convertToArabNumerics(romanOp1.toString());
+            int op2 = convertToArabNumerics(romanOp2.toString());
             if (op1 >= 1 && op1 <= 10 && op2 >= 1 && op2 <= 10) {
                 result = convertToRomanNumerics(calculation(op1, op2, operationSign));
             } else {
                 throw new Exception("Калькулятор принимает на вход только числа от 1 до 10 включительно");
             }
         } else {
-            throw new Exception("Используются римские и арабские цифры вперемежку");
+            throw new Exception("Используются римские и арабские цифры вперемежку либо недопустимое выражение");
         }
 
-        return "This is your input: " + input + ". Result is: " + result;
+//        return "This is your input: " + input + ". Result is: " + result;
+        return result;
     }
 
     /*
@@ -96,8 +92,7 @@ public class Main {
     Method converts string of roman number to arabic number. Returns integer.
      */
     static int convertToArabNumerics(String operand) {
-        int result = 0;
-        return result;
+        return RomanNumeric.valueOf(operand).getArabicNumber();
     }
 
     /*
@@ -107,7 +102,6 @@ public class Main {
         if (operand <= 0) {
             throw new Exception("Результат работы меньше единицы");
         }
-        String result = "";
-        return result;
+        return String.valueOf(RomanNumeric.findByValue(operand));
     }
 }
